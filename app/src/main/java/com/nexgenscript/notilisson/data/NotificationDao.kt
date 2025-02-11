@@ -21,5 +21,17 @@ interface NotificationDao {
 
     @Query("DELETE FROM notifications")
     suspend fun clearAll()
+
+    @Query("""
+    SELECT * FROM notifications t1
+    WHERE id = (
+        SELECT MIN(id) FROM notifications t2
+        WHERE t1.only_time = t2.only_time
+        AND t1.package_name = t2.package_name
+    )
+    ORDER BY time DESC
+""")
+    fun getFilteredNotifications(): Flow<List<NotificationEntity>>
+
 }
 

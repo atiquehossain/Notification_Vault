@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.nexgenscript.notilisson.data.NotificationDatabase
 import com.nexgenscript.notilisson.data.NotificationEntity
-import com.nexgenscript.notilisson.data.NotificationViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

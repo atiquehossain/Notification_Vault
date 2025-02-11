@@ -1,18 +1,15 @@
-package com.nexgenscript.notilisson.data
+package com.nexgenscript.notilisson
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.nexgenscript.notilisson.data.NotificationDao
+import com.nexgenscript.notilisson.data.NotificationEntity
 import kotlinx.coroutines.launch
 
-
-
-
-import androidx.lifecycle.asLiveData
-
-
 class NotificationViewModel(private val dao: NotificationDao) : ViewModel() {
-    val notifications: LiveData<List<NotificationEntity>> = dao.getAllNotifications().asLiveData()
+    val notifications: LiveData<List<NotificationEntity>> = dao.getFilteredNotifications().asLiveData()
 
     fun deleteNotification(notification: NotificationEntity) {
         viewModelScope.launch {
@@ -26,5 +23,3 @@ class NotificationViewModel(private val dao: NotificationDao) : ViewModel() {
         }
     }
 }
-
-
