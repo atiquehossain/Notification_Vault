@@ -1,6 +1,9 @@
 package com.nexgenscript.notilisson
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,8 +14,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.nexgenscript.notilisson.data.NotificationEntity
 
@@ -44,19 +50,38 @@ fun NotificationApp(
 }
 
 @Composable
-fun NotificationCard(notification: NotificationEntity) {
+fun NotificationCard(notification: NotificationEntity, onDelete: (NotificationEntity) -> Unit) {
     Card(
-        modifier = Modifier.padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clip(MaterialTheme.shapes.large),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
             Text(text = notification.appName, style = MaterialTheme.typography.titleMedium)
-            Text(text = notification.title, style = MaterialTheme.typography.bodyMedium)
-            Text(text = notification.content, style = MaterialTheme.typography.bodySmall)
-            Text(text = notification.time, style = MaterialTheme.typography.bodySmall)
+            Text(text = notification.title, style = MaterialTheme.typography.bodyLarge)
+            Text(text = notification.content, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Text(text = notification.humanReadTime, style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TextButton(onClick = { onDelete(notification) }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            }
         }
     }
 }
+
 
 
 

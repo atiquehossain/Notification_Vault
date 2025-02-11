@@ -11,6 +11,7 @@ composeBom = "2024.04.01"
 roomCompiler = "2.6.1"
 roomCommon = "2.6.1"
 roomKtx = "2.6.1"
+runtimeLivedata = "1.7.7"
 
 
 [libraries]
@@ -31,6 +32,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 
 
 [plugins]
