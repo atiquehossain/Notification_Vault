@@ -10,12 +10,16 @@ import kotlinx.coroutines.launch
 
 class NotificationViewModel(private val dao: NotificationDao) : ViewModel() {
     val notifications: LiveData<List<NotificationEntity>> = dao.getFilteredNotifications().asLiveData()
+    val notificationCount: LiveData<Int> = dao.getFilteredNotificationCount().asLiveData() // Observe count
+
 
     fun deleteNotification(notification: NotificationEntity) {
         viewModelScope.launch {
             dao.deleteNotification(notification)
         }
     }
+
+
 
     fun clearAllNotifications() {
         viewModelScope.launch {

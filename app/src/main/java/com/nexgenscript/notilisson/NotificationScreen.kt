@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
@@ -25,6 +24,7 @@ fun NotificationScreen(
     onAppSelected: (String?) -> Unit
 ) {
     val notifications by viewModel.notifications.observeAsState(emptyList())
+    val notificationCount by viewModel.notificationCount.observeAsState(0) // ✅ Fetch count here
 
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -35,21 +35,15 @@ fun NotificationScreen(
                 (notification.title != notification.appName) // Exclude items where title == appName
     }
 
-
     Scaffold(
-        topBar = {
+     /*   topBar = {
             TopAppBar(
                 title = { Text("Notifications", style = MaterialTheme.typography.headlineSmall) },
                 actions = {
                     SearchBar(searchQuery) { searchQuery = it }
-                 /*   DropdownMenu(
-                        items = notifications.map { it.packageName }.distinct(),
-                        selectedApp = selectedApp,
-                        onAppSelected = onAppSelected
-                    )*/
                 }
             )
-        },
+        },*/
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.clearAllNotifications() },
@@ -59,48 +53,32 @@ fun NotificationScreen(
             }
         }
     ) { paddingValues ->
-        if (filteredNotifications.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.background),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("No notifications available", style = MaterialTheme.typography.bodyLarge)
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                items(filteredNotifications) { notification ->
-                    NotificationCard(notification, viewModel::deleteNotification)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Text(
+                text = "Today's Notifications:  $notificationCount",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(8.dp)
+            )
+
+            if (filteredNotifications.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("No notifications available", style = MaterialTheme.typography.bodyLarge)
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(filteredNotifications) { notification ->
+                        NotificationCard(notification, viewModel::deleteNotification)
+                    }
                 }
             }
         }
     }
 }
-
-@Composable
-fun SearchBar(query: TextFieldValue, onQueryChange: (TextFieldValue) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(Icons.Default.Search, contentDescription = "Search", modifier = Modifier.padding(8.dp))
-        BasicTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            modifier = Modifier.weight(1f),
-            textStyle = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-
