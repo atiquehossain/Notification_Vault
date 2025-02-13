@@ -16,6 +16,7 @@ data class NotificationEntity(
     @ColumnInfo(name = "only_time") val onlyTime: String, // HH:mm:ss format
     @ColumnInfo(name = "app_name") val appName: String,
     @ColumnInfo(name = "icon") val icon: String?, // Store as Base64 or file path
-    @ColumnInfo(name = "category") val category: String? // Nullable, ensure safe handling
+    @ColumnInfo(name = "category") val category: String?, // Nullable, ensure safe handling
+    @ColumnInfo(name = "profileImageBase64") val profileImageBase64: String? // Nullable, ensure safe handling
 )
 
