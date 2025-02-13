@@ -45,6 +45,18 @@ interface NotificationDao {
     AND date = DATE('now')  
 """)
     fun getFilteredNotificationCount(): Flow<Int>
+    @Query("""
+    SELECT * FROM notifications 
+    WHERE app_name = :appName AND title = :title 
+    ORDER BY time DESC
+""")
+    fun getNotificationsByAppAndTitle(appName: String, title: String): Flow<List<NotificationEntity>>
+
+    @Query("SELECT DISTINCT app_name FROM notifications")
+    fun getAllApps(): Flow<List<String>>
+
+    @Query("SELECT DISTINCT title FROM notifications WHERE app_name = :appName")
+    fun getTitlesByApp(appName: String): Flow<List<String>>
 
 
 }

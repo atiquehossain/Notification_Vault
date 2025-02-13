@@ -1,11 +1,9 @@
-package com.nexgenscript.notilisson
+package com.nexgenscript.notilisson.service
 
-import android.app.Notification
 import android.content.pm.PackageManager
 import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.text.format.DateUtils
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.nexgenscript.notilisson.data.NotificationDatabase

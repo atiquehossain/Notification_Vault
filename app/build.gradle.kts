@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.navigation.compose)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.common)
     testImplementation(libs.junit)
@@ -62,5 +63,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
 
 }
