@@ -29,7 +29,7 @@ interface NotificationDao {
         WHERE t1.only_time = t2.only_time
         AND t1.package_name = t2.package_name
     )
-    AND app_name NOT LIKE '%Android System%' -- Exclude Android System notifications
+    AND app_name NOT LIKE '%Android System%' 
     ORDER BY time DESC
 """)
     fun getFilteredNotifications(): Flow<List<NotificationEntity>>
@@ -44,12 +44,7 @@ interface NotificationDao {
     AND app_name NOT LIKE '%Android System%'
     AND date = DATE('now')  
 """)
-    fun getFilteredNotificationCount(): Flow<Int>
-    @Query("""
-    SELECT * FROM notifications 
-    WHERE app_name = :appName AND title = :title 
-    ORDER BY time DESC
-""")
+
     fun getNotificationsByAppAndTitle(appName: String, title: String): Flow<List<NotificationEntity>>
 
     @Query("SELECT DISTINCT app_name FROM notifications")
