@@ -33,7 +33,7 @@ class NotificationListener : NotificationListenerService() {
         // Convert timestamp to date & time
         val (date, onlyTime) = convertTimestamp(timestamp)
 
-        Log.d("NotificationListener", "📩 Message from: $appName ($packageName)")
+        Log.d("NotificationListener", " Message from: $appName ($packageName)")
         Log.d("NotificationListener", "Title: $title")
         Log.d("NotificationListener", "Content: $content")
         Log.d("NotificationListener", "Category: $category")
@@ -46,8 +46,8 @@ class NotificationListener : NotificationListenerService() {
                 content = content,
                 time = timestamp,
                 humanReadTime = getHumanReadableTime(timestamp),
-                date = date,       // 🆕 Store the date
-                onlyTime = onlyTime, // 🆕 Store the time
+                date = date,
+                onlyTime = onlyTime,
                 appName = appName,
                 packageName = packageName,
                 icon = icon,
