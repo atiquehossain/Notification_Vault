@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         val dao = NotificationDatabase.getDatabase(application).notificationDao()
         val viewModel = ViewModelProvider(this, NotificationViewModelFactory(dao))[NotificationViewModel::class.java]
 
-        // ✅ Check and request notification access
+
         if (!isNotificationListenerEnabled(this)) {
             requestNotificationAccess(this)
         }

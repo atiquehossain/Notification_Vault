@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.nexgenscript.notilisson.AppItem
 import com.nexgenscript.notilisson.viewmodel.NotificationViewModel
 
 @Composable

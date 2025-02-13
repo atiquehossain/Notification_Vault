@@ -29,7 +29,7 @@ interface NotificationDao {
         WHERE t1.only_time = t2.only_time
         AND t1.package_name = t2.package_name
     )
-    AND app_name NOT IN ('Android System', 'Google')
+    AND app_name NOT IN ('Android System')
     AND content NOT IN ('No Content')
     ORDER BY time DESC
 """)

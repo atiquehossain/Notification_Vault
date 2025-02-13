@@ -1,28 +1,71 @@
-package com.nexgenscript.notilisson
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppItem(appName: String, onClick: () -> Unit) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        onClick = onClick
     ) {
-        Text(text = appName, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Icon(Icons.Default.ArrowForward, contentDescription = "View Titles")
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+        /*    Image(
+                painter = painterResource(id = iconResId),
+                contentDescription = "App Icon",
+                modifier = Modifier.size(40.dp) // Adjust size as needed
+            )*/
+            Text(
+                text = appName,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f) // Closing parenthesis added here
+            )
+
+            Spacer(modifier = Modifier.width(8.dp)) // Spacer is now correctly placed
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = "View Titles",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
+
+    HorizontalDivider(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        thickness = 0.8.dp,
+        color = MaterialTheme.colorScheme.outlineVariant
+    )
 }
