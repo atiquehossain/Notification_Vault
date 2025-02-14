@@ -18,7 +18,7 @@ class NotificationViewModel(private val dao: NotificationDao) : ViewModel() {
         }
     }
 
-    fun getTitlesByApp(appName: String) = dao.getTitlesByApp(appName).asLiveData()
+    //fun getTitlesByApp(appName: String) = dao.getTitlesByApp(appName).asLiveData()
     fun getNotificationsByAppAndTitle(appName: String, title: String) = dao.getNotificationsByAppAndTitle(appName, title).asLiveData()
 
 

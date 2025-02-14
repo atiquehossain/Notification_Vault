@@ -22,7 +22,7 @@ interface NotificationDao {
     @Query("DELETE FROM notifications")
     suspend fun clearAll()
 
-    @Query("""
+/*    @Query("""
     SELECT * FROM notifications t1
     WHERE id = (
         SELECT MIN(id) FROM notifications t2
@@ -34,12 +34,31 @@ interface NotificationDao {
     ORDER BY time DESC
 """)
 
+    fun getFilteredNotifications(): Flow<List<NotificationEntity>>*/
+
+    @Query("""
+    SELECT id, title, package_name, time, human_read_time, date, only_time, 
+           app_name, icon, category, profileImageBase64, 
+           GROUP_CONCAT(content, ' | ') AS content
+    FROM notifications 
+    WHERE app_name NOT IN ('Android System') 
+        AND content NOT IN ('No Content')
+        AND category NOT IN ('call', 'missed_call')
+    GROUP BY package_name, only_time
+    ORDER BY time DESC
+""")
     fun getFilteredNotifications(): Flow<List<NotificationEntity>>
+
+
+
 
     @Query("""
         SELECT * FROM notifications 
-        WHERE app_name = :appName AND title = :title
+        WHERE app_name = :appName
+        AND title = :title     
+        AND IFNULL(category, '') NOT IN ('call', 'missed_call')
         ORDER BY time DESC
+
     """)
     fun getNotificationsByAppAndTitle(appName: String, title: String): Flow<List<NotificationEntity>>
 
