@@ -28,7 +28,8 @@ class NotificationListener : NotificationListenerService() {
         val packageName = sbn.packageName
         val extras = sbn.notification.extras
         val title = extras.getString("android.title") ?: "No Title"
-        var content = extras.getString("android.text")
+       // val content = extras.getString("android.text")
+        val content = extras.getString("android.text") ?: "No Content"
         val timestamp = sbn.postTime
         val category = sbn.notification.category ?: "Unknown"
         val appName = getAppNameFromPackage(packageName)
@@ -41,9 +42,9 @@ class NotificationListener : NotificationListenerService() {
         val imageBase64 = extractImageAsBase64(extras)
 
         // If the content is null or indicates a photo, update it accordingly
-        if (content == null || content.lowercase(Locale.getDefault()) == "photo") {
+        /*if (content == null || content.lowercase(Locale.getDefault()) == "photo") {
             content = "📷 Photo"
-        }
+        }*/
 
         Log.d("NotificationListener", "Message from: $appName ($packageName)")
         Log.d("NotificationListener", "Title: $title")
