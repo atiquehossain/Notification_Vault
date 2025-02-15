@@ -1,5 +1,6 @@
 package com.nexgenscript.notilisson.service
 
+import android.app.Notification
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -29,39 +30,54 @@ class NotificationListener : NotificationListenerService() {
         val packageName = sbn.packageName
         val extras = sbn.notification.extras
         val title = extras.getString("android.title") ?: "No Title"
-        // val content = extras.getString("android.text")
         val content = extras.getString("android.text") ?: "No Content"
         val timestamp = sbn.postTime
         val category = sbn.notification.category ?: "Unknown"
         val appName = getAppNameFromPackage(packageName)
-        val icon = sbn.notification.smallIcon?.resId?.toString() ?: "No Icon"
+
+        // Check for group key & summary
+        val groupKey = sbn.notification.group
+        val isGroupSummary = sbn.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
 
         // Convert timestamp to date & time
         val (date, onlyTime) = convertTimestamp(timestamp)
 
-        // Try extracting image from multiple sources
+        // Extract profile image
         val imageBase64 = extractImageAsBase64(extras)
 
-        // 🔹 Generate Hash (Unique Message Fingerprint)
-        val messageHash = generateSHA256("$packageName|$title|$content")
+        // Extract conversation ID if available
+        val conversationId = extras.getString("android.conversation")
 
-        // If the content is null or indicates a photo, update it accordingly
-        /*if (content == null || content.lowercase(Locale.getDefault()) == "photo") {
-            content = "📷 Photo"
-        }*/
+        // Check if reply is possible
+        val canReply = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            extras.getParcelableArrayList("android.remoteInputHistory", CharSequence::class.java)?.isNotEmpty() ?: false
+        } else {
+            @Suppress("DEPRECATION")
+            extras.getParcelableArray("android.remoteInputHistory")?.isNotEmpty() ?: false
+        }
 
-        Log.d("NotificationListener", "Message from: $appName ($packageName)")
-        Log.d("NotificationListener", "Title: $title")
-        Log.d("NotificationListener", "Content: $content")
-        Log.d("NotificationListener", "Category: $category")
-        Log.d("NotificationListener", "Icon ID: $icon")
-        Log.d("NotificationListener", "Date: $date, Time: $onlyTime")
-        Log.d("NotificationListener", "Image Extracted: ${imageBase64 != null}")
+        // Convert Small Icon to ByteArray
+        val iconBitmap = getBitmapFromIcon(sbn.notification.smallIcon)
+        val iconByteArray = iconBitmap?.let { encodeImageToByteArray(it) }
 
+        // Generate unique message ID (Include groupKey for uniqueness)
+        val uniqueMessageId = generateSHA256("$packageName|$title|$content|$groupKey")
 
+        // Logging notifications
+        when {
+            groupKey != null && isGroupSummary -> {
+                Log.d("NotificationListener", "📌 Group Summary Notification: $title from $appName ($packageName)")
+            }
+            groupKey != null -> {
+                Log.d("NotificationListener", "🔗 Grouped Notification: $title from $appName ($packageName) [Group: $groupKey]")
+            }
+            else -> {
+                Log.d("NotificationListener", "📨 Normal Notification: $title from $appName ($packageName)")
+            }
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
-            val exists = db.notificationDao().checkIfNotificationExists(messageHash) > 0
+            val exists = db.notificationDao().checkIfNotificationExists(uniqueMessageId) > 0
 
             if (!exists) {
                 val notification = NotificationEntity(
@@ -73,18 +89,33 @@ class NotificationListener : NotificationListenerService() {
                     date = date,
                     onlyTime = onlyTime,
                     appName = appName,
-                    icon = icon,
                     category = category,
+                    icon = iconByteArray,
+                    uniqueMessageId = uniqueMessageId,
                     profileImageBase64 = imageBase64,
-                    messageHash = messageHash,  // Store hash
-
+                    canReply = canReply,
+                    conversationId = conversationId,
+                    isReplied = false, // Default as false
+                    groupKey = groupKey, // Added groupKey for tracking grouped notifications
+                    isGroupSummary = isGroupSummary // Added flag for group summary notifications
                 )
                 db.notificationDao().insertNotification(notification)
             } else {
                 Log.d("NotificationListener", "Duplicate notification skipped: $content")
-
             }
         }
+    }
+
+    private fun getBitmapFromIcon(icon: android.graphics.drawable.Icon?): Bitmap? {
+        return icon?.loadDrawable(applicationContext)?.let { drawable ->
+            if (drawable is BitmapDrawable) drawable.bitmap else null
+        }
+    }
+
+    private fun encodeImageToByteArray(bitmap: Bitmap): ByteArray {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        return baos.toByteArray()
     }
 
     private fun generateSHA256(input: String): String {
@@ -124,13 +155,6 @@ class NotificationListener : NotificationListenerService() {
         return bitmap?.let { encodeImageToBase64(it) }
     }
 
-    private fun getBitmapFromIcon(icon: android.graphics.drawable.Icon): Bitmap? {
-        return icon.loadDrawable(applicationContext)?.let { drawable ->
-            if (drawable is BitmapDrawable) drawable.bitmap else null
-        }
-    }
-
-
     private fun encodeImageToBase64(bitmap: Bitmap): String {
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
@@ -148,6 +172,3 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 }
-
-
-

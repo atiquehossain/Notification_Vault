@@ -21,43 +21,25 @@ interface NotificationDao {
     @Query("DELETE FROM notifications")
     suspend fun clearAll()
 
-/*    @Query("""
-    SELECT * FROM notifications t1
-    WHERE id = (
-        SELECT MIN(id) FROM notifications t2
-        WHERE t1.only_time = t2.only_time
-        AND t1.package_name = t2.package_name
-    )
-    AND app_name NOT IN ('Android System')
-    AND content NOT IN ('No Content')
-    ORDER BY time DESC
-""")
-
-    fun getFilteredNotifications(): Flow<List<NotificationEntity>>*/
-
     @Query("""
     SELECT id, title, package_name, time, human_read_time, date, only_time, 
-           app_name, icon, category, profileImageBase64, messageHash, 
-           GROUP_CONCAT(content, ' | ') AS content
+           app_name, icon, category, profileImageBase64, uniqueMessageId, 
+           GROUP_CONCAT(content, ' | ') AS content, can_reply, is_replied, is_group_summary
     FROM notifications 
     WHERE app_name NOT IN ('Android System') 
         AND content NOT IN ('No Content')
         AND category NOT IN ('call', 'missed_call')
-    GROUP BY package_name, only_time, messageHash
+    GROUP BY package_name, only_time, uniqueMessageId, is_group_summary
     ORDER BY time DESC
 """)
     fun getFilteredNotifications(): Flow<List<NotificationEntity>>
-
-
-
-
 
     @Query("""
     SELECT * FROM notifications 
     WHERE app_name = :appName
     AND title = :title     
     AND IFNULL(category, '') NOT IN ('call', 'missed_call')
-    GROUP BY messageHash
+    GROUP BY uniqueMessageId 
     ORDER BY time DESC
 """)
     fun getNotificationsByAppAndTitle(appName: String, title: String): Flow<List<NotificationEntity>>
@@ -65,8 +47,8 @@ interface NotificationDao {
     @Query("SELECT DISTINCT app_name FROM notifications")
     fun getAllApps(): Flow<List<String>>
 
-    @Query("SELECT COUNT(*) FROM notifications WHERE messageHash = :messageHash")
-    suspend fun checkIfNotificationExists(messageHash: String): Int
+    @Query("SELECT COUNT(*) FROM notifications WHERE uniqueMessageId  = :uniqueMessageId ")
+    suspend fun checkIfNotificationExists(uniqueMessageId : String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNotification(notification: NotificationEntity)
