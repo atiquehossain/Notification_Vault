@@ -1,18 +1,34 @@
 package com.nexgenscript.notilisson.navigation
 
-
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.nexgenscript.notilisson.ui.screens.AppListScreen
-import com.nexgenscript.notilisson.ui.screens.NotificationListScreen
-import com.nexgenscript.notilisson.ui.screens.TitleListScreen
+import com.nexgenscript.notilisson.ui.screens.*
 import com.nexgenscript.notilisson.viewmodel.NotificationViewModel
 
 @Composable
 fun AppNavigation(navController: NavHostController, viewModel: NotificationViewModel) {
-    NavHost(navController = navController, startDestination = "appList") {
+    var selectedTab by rememberSaveable { mutableStateOf("home") } // ✅ Preserves state on config changes
+
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+            HomeScreen(navController, selectedTab) { newTab ->
+                selectedTab = newTab
+                navController.navigate(newTab) {
+                    popUpTo("home") { inclusive = false }
+                }
+            }
+        }
+        composable("settings") {
+            SettingsScreen(navController, selectedTab) { newTab ->
+                selectedTab = newTab
+                navController.navigate(newTab) {
+                    popUpTo("home") { inclusive = false }
+                }
+            }
+        }
         composable("appList") {
             AppListScreen(viewModel, navController)
         }
