@@ -1,4 +1,4 @@
-package com.nexgenscript.notilisson.ui.screens
+package com.nexgenscript.notilisson.navigation
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -16,7 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.automirrored.filled.Message
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BottomNavigationBar(selectedTab: String, onTabSelected: (String) -> Unit) {
     val items = listOf(
-        "home" to Icons.Default.Home,
+        "Message" to Icons.AutoMirrored.Filled.Message,
+        "Notifications" to Icons.Default.Notifications,
         "settings" to Icons.Default.Settings
     )
 
