@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -28,7 +29,7 @@ class NotificationListener : NotificationListenerService() {
         val packageName = sbn.packageName
         val extras = sbn.notification.extras
         val title = extras.getString("android.title") ?: "No Title"
-       // val content = extras.getString("android.text")
+        // val content = extras.getString("android.text")
         val content = extras.getString("android.text") ?: "No Content"
         val timestamp = sbn.postTime
         val category = sbn.notification.category ?: "Unknown"
@@ -40,6 +41,9 @@ class NotificationListener : NotificationListenerService() {
 
         // Try extracting image from multiple sources
         val imageBase64 = extractImageAsBase64(extras)
+
+        // 🔹 Generate Hash (Unique Message Fingerprint)
+        val messageHash = generateSHA256("$packageName|$title|$content")
 
         // If the content is null or indicates a photo, update it accordingly
         /*if (content == null || content.lowercase(Locale.getDefault()) == "photo") {
@@ -54,22 +58,38 @@ class NotificationListener : NotificationListenerService() {
         Log.d("NotificationListener", "Date: $date, Time: $onlyTime")
         Log.d("NotificationListener", "Image Extracted: ${imageBase64 != null}")
 
+
+
         CoroutineScope(Dispatchers.IO).launch {
-            val notification = NotificationEntity(
-                title = title,
-                content = content,
-                packageName = packageName,
-                time = timestamp,
-                humanReadTime = getHumanReadableTime(timestamp),
-                date = date,
-                onlyTime = onlyTime,
-                appName = appName,
-                icon = icon,
-                category = category,
-                profileImageBase64 = imageBase64
-            )
-            db.notificationDao().insertNotification(notification)
+            val exists = db.notificationDao().checkIfNotificationExists(messageHash) > 0
+
+            if (!exists) {
+                val notification = NotificationEntity(
+                    title = title,
+                    content = content,
+                    packageName = packageName,
+                    time = timestamp,
+                    humanReadTime = getHumanReadableTime(timestamp),
+                    date = date,
+                    onlyTime = onlyTime,
+                    appName = appName,
+                    icon = icon,
+                    category = category,
+                    profileImageBase64 = imageBase64,
+                    messageHash = messageHash,  // Store hash
+
+                )
+                db.notificationDao().insertNotification(notification)
+            } else {
+                Log.d("NotificationListener", "Duplicate notification skipped: $content")
+
+            }
         }
+    }
+
+    private fun generateSHA256(input: String): String {
+        val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 
     private fun convertTimestamp(timestamp: Long): Pair<String, String> {
@@ -89,12 +109,16 @@ class NotificationListener : NotificationListenerService() {
         val bitmap: Bitmap? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             extras.getParcelable("android.picture", Bitmap::class.java)
                 ?: extras.getParcelable("android.bigPicture", Bitmap::class.java)
-                ?: (extras.getParcelable("android.largeIcon", android.graphics.drawable.Icon::class.java)?.let { getBitmapFromIcon(it) })
+                ?: (extras.getParcelable(
+                    "android.largeIcon",
+                    android.graphics.drawable.Icon::class.java
+                )?.let { getBitmapFromIcon(it) })
         } else {
             @Suppress("DEPRECATION")
             extras.getParcelable("android.picture")
                 ?: extras.getParcelable("android.bigPicture")
-                ?: (extras.getParcelable<android.graphics.drawable.Icon>("android.largeIcon")?.let { getBitmapFromIcon(it) })
+                ?: (extras.getParcelable<android.graphics.drawable.Icon>("android.largeIcon")
+                    ?.let { getBitmapFromIcon(it) })
         }
 
         return bitmap?.let { encodeImageToBase64(it) }
@@ -124,3 +148,6 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 }
+
+
+

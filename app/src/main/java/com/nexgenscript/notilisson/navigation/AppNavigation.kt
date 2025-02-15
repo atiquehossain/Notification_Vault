@@ -1,13 +1,13 @@
 package com.nexgenscript.notilisson.navigation
 
 
-import AppListScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.nexgenscript.notilisson.NotificationListScreen
-import com.nexgenscript.notilisson.TitleListScreen
+import com.nexgenscript.notilisson.ui.screens.AppListScreen
+import com.nexgenscript.notilisson.ui.screens.NotificationListScreen
+import com.nexgenscript.notilisson.ui.screens.TitleListScreen
 import com.nexgenscript.notilisson.viewmodel.NotificationViewModel
 
 @Composable

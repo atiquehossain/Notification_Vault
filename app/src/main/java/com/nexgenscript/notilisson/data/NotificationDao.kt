@@ -13,8 +13,7 @@ interface NotificationDao {
     @Query("SELECT * FROM notifications ORDER BY time DESC")
     fun getAllNotifications(): Flow<List<NotificationEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNotification(notification: NotificationEntity)
+
 
     @Delete
     suspend fun deleteNotification(notification: NotificationEntity)
@@ -38,13 +37,13 @@ interface NotificationDao {
 
     @Query("""
     SELECT id, title, package_name, time, human_read_time, date, only_time, 
-           app_name, icon, category, profileImageBase64, 
+           app_name, icon, category, profileImageBase64, messageHash, 
            GROUP_CONCAT(content, ' | ') AS content
     FROM notifications 
     WHERE app_name NOT IN ('Android System') 
         AND content NOT IN ('No Content')
         AND category NOT IN ('call', 'missed_call')
-    GROUP BY package_name, only_time
+    GROUP BY package_name, only_time, messageHash
     ORDER BY time DESC
 """)
     fun getFilteredNotifications(): Flow<List<NotificationEntity>>
@@ -52,21 +51,26 @@ interface NotificationDao {
 
 
 
-    @Query("""
-        SELECT * FROM notifications 
-        WHERE app_name = :appName
-        AND title = :title     
-        AND IFNULL(category, '') NOT IN ('call', 'missed_call')
-        ORDER BY time DESC
 
-    """)
+    @Query("""
+    SELECT * FROM notifications 
+    WHERE app_name = :appName
+    AND title = :title     
+    AND IFNULL(category, '') NOT IN ('call', 'missed_call')
+    GROUP BY messageHash
+    ORDER BY time DESC
+""")
     fun getNotificationsByAppAndTitle(appName: String, title: String): Flow<List<NotificationEntity>>
 
     @Query("SELECT DISTINCT app_name FROM notifications")
     fun getAllApps(): Flow<List<String>>
 
-    @Query("SELECT DISTINCT title FROM notifications WHERE app_name = :appName")
-    fun getTitlesByApp(appName: String): Flow<List<String>>
+    @Query("SELECT COUNT(*) FROM notifications WHERE messageHash = :messageHash")
+    suspend fun checkIfNotificationExists(messageHash: String): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNotification(notification: NotificationEntity)
+
 
 
 }

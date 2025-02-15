@@ -3,6 +3,7 @@ package com.nexgenscript.notilisson.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
+import java.security.MessageDigest
 
 @Entity(tableName = "notifications")
 data class NotificationEntity(
@@ -17,6 +18,8 @@ data class NotificationEntity(
     @ColumnInfo(name = "app_name") val appName: String,
     @ColumnInfo(name = "icon") val icon: String?, // Store as Base64 or file path
     @ColumnInfo(name = "category") val category: String?, // Nullable, ensure safe handling
-    @ColumnInfo(name = "profileImageBase64") val profileImageBase64: String? // Nullable, ensure safe handling
+    @ColumnInfo(name = "profileImageBase64") val profileImageBase64: String?, // Nullable, ensure safe handling
+    @ColumnInfo(name = "messageHash") val messageHash: String
+
 )
 
