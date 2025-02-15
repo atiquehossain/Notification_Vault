@@ -96,9 +96,9 @@ class NotificationListener : NotificationListenerService() {
                     profileImageBase64 = imageBase64,
                     canReply = canReply,
                     conversationId = conversationId,
-                    isReplied = false, // Default as false
-                    groupKey = groupKey, // Added groupKey for tracking grouped notifications
-                    isGroupSummary = isGroupSummary // Added flag for group summary notifications
+                    isReplied = false,
+                    groupKey = groupKey,
+                    isGroupSummary = isGroupSummary
                 )
                 db.notificationDao().insertNotification(notification)
             } else {

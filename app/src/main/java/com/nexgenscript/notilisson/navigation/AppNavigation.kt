@@ -10,7 +10,7 @@ import com.nexgenscript.notilisson.viewmodel.NotificationViewModel
 
 @Composable
 fun AppNavigation(navController: NavHostController, viewModel: NotificationViewModel) {
-    var selectedTab by rememberSaveable { mutableStateOf("Message") } // ✅ Preserves state on config changes
+    var selectedTab by rememberSaveable { mutableStateOf("Message") }
 
     NavHost(navController = navController, startDestination = "Message") {
         composable("Message") {

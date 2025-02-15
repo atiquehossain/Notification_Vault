@@ -10,20 +10,20 @@ data class NotificationEntity(
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "content") val content: String,
     @ColumnInfo(name = "package_name") val packageName: String,
-    @ColumnInfo(name = "time") val time: Long, // Unix timestamp
-    @ColumnInfo(name = "human_read_time") val humanReadTime: String, // Readable time
-    @ColumnInfo(name = "date") val date: String, // YYYY-MM-DD format
-    @ColumnInfo(name = "only_time") val onlyTime: String, // HH:mm:ss format
+    @ColumnInfo(name = "time") val time: Long,
+    @ColumnInfo(name = "human_read_time") val humanReadTime: String,
+    @ColumnInfo(name = "date") val date: String,
+    @ColumnInfo(name = "only_time") val onlyTime: String,
     @ColumnInfo(name = "app_name") val appName: String,
     @ColumnInfo(name = "category") val category: String?,
-    @ColumnInfo(name = "group_key") val groupKey: String?, // Group identifier
-    @ColumnInfo(name = "is_group_summary") val isGroupSummary: Boolean = false, // Track if it's a group summary
-    @ColumnInfo(name = "icon", typeAffinity = ColumnInfo.BLOB) val icon: ByteArray?, // Store as raw image data
-    @ColumnInfo(name = "uniqueMessageId") val uniqueMessageId: String, // Unique hash for message
-    @ColumnInfo(name = "profileImageBase64") val profileImageBase64: String?, // Base64 for sender's image
-    @ColumnInfo(name = "can_reply") val canReply: Boolean = false, // Whether reply is possible
-    @ColumnInfo(name = "conversation_id") val conversationId: String?, // Used to track threads
-    @ColumnInfo(name = "is_replied") val isReplied: Boolean = false // Track if the user has replied
+    @ColumnInfo(name = "group_key") val groupKey: String?,
+    @ColumnInfo(name = "is_group_summary") val isGroupSummary: Boolean = false,
+    @ColumnInfo(name = "icon", typeAffinity = ColumnInfo.BLOB) val icon: ByteArray?,
+    @ColumnInfo(name = "uniqueMessageId") val uniqueMessageId: String,
+    @ColumnInfo(name = "profileImageBase64") val profileImageBase64: String?,
+    @ColumnInfo(name = "can_reply") val canReply: Boolean = false,
+    @ColumnInfo(name = "conversation_id") val conversationId: String?,
+    @ColumnInfo(name = "is_replied") val isReplied: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
