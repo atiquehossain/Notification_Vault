@@ -61,7 +61,8 @@ class NotificationListener : NotificationListenerService() {
         val iconByteArray = iconBitmap?.let { encodeImageToByteArray(it) }
 
         // Generate unique message ID (Include groupKey for uniqueness)
-        val uniqueMessageId = generateSHA256("$packageName|$title|$content|$groupKey")
+      //  val uniqueMessageId = generateSHA256("$packageName|$title|$content|$groupKey")
+        val uniqueMessageId = generateSHA256("$packageName|$title|$content|$groupKey|$timestamp|$conversationId|$category")
 
         // Logging notifications
         when {

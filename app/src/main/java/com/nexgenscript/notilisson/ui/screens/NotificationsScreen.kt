@@ -26,7 +26,7 @@ fun NotificationsScreen(navController: NavController, selectedTab: String, onTab
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "Settings Page", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Notifications Page", style = MaterialTheme.typography.headlineMedium)
         }
     }
 }

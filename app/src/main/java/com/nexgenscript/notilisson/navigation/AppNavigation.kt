@@ -21,11 +21,19 @@ fun AppNavigation(navController: NavHostController, viewModel: NotificationViewM
                 }
             }
         }
+        composable("Notifications") {
+            SettingsScreen(navController, selectedTab) { newTab ->
+                selectedTab = newTab
+                navController.navigate(newTab) {
+                    popUpTo("Notifications") { inclusive = false }
+                }
+            }
+        }
         composable("settings") {
             SettingsScreen(navController, selectedTab) { newTab ->
                 selectedTab = newTab
                 navController.navigate(newTab) {
-                    popUpTo("home") { inclusive = false }
+                    popUpTo("settings") { inclusive = false }
                 }
             }
         }
