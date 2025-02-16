@@ -27,82 +27,58 @@ class NotificationListener : NotificationListenerService() {
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onNotificationPosted(sbn: StatusBarNotification) {
-        val packageName = sbn.packageName
-        val extras = sbn.notification.extras
-        val title = extras.getString("android.title") ?: "No Title"
-        val content = extras.getString("android.text") ?: "No Content"
-        val timestamp = sbn.postTime
-        val category = sbn.notification.category ?: "Unknown"
-        val appName = getAppNameFromPackage(packageName)
+        sbn.let {
+            val packageName = sbn.packageName
+            val extras = sbn.notification.extras
+            val title = extras.getString("android.title") ?: "No Title"
+            val content = extras.getString("android.text") ?: "No Content"
+            val timestamp = sbn.postTime
+            val category = sbn.notification.category ?: "Unknown"
+            val appName = getAppNameFromPackage(packageName)
+            val conversationId = extras.getString("android.conversation")
 
-        // Check for group key & summary
-        val groupKey = sbn.notification.group
-        val isGroupSummary = sbn.notification.flags and Notification.FLAG_GROUP_SUMMARY != 0
 
-        // Convert timestamp to date & time
-        val (date, onlyTime) = convertTimestamp(timestamp)
+            // Generate a more robust uniqueMessageId
+            val uniqueMessageId =
+                hashMessage("$packageName$title$content")
+            val replyAvailable = getReplyAction(it.notification) != null // ✅ Detect reply action
 
-        // Extract profile image
-        val imageBase64 = extractImageAsBase64(extras)
+            // Log notification details for debugging
+            Log.d(
+                "NotificationListener",
+                "Package: $packageName, Title: $title, Content: $content, Timestamp: $timestamp, ConversationId: $conversationId, UniqueMessageId: $uniqueMessageId"
+            )
 
-        // Extract conversation ID if available
-        val conversationId = extras.getString("android.conversation")
+            CoroutineScope(Dispatchers.IO).launch {
+                val exists = db.notificationDao().checkIfNotificationExists(uniqueMessageId) > 0
 
-        // Check if reply is possible
-        val canReply = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            extras.getParcelableArrayList("android.remoteInputHistory", CharSequence::class.java)?.isNotEmpty() ?: false
-        } else {
-            @Suppress("DEPRECATION")
-            extras.getParcelableArray("android.remoteInputHistory")?.isNotEmpty() ?: false
-        }
+                if (!exists) {
+                    val notification = NotificationEntity(
+                        title = title,
+                        content = content,
+                        packageName = packageName,
+                        time = timestamp,
+                        humanReadTime = getHumanReadableTime(timestamp),
+                        date = convertTimestamp(timestamp).first,
+                        onlyTime = convertTimestamp(timestamp).second,
+                        appName = appName,
+                        category = category,
+                        icon = getBitmapFromIcon(sbn.notification.smallIcon)?.let {
+                            encodeImageToByteArray(
+                                it
+                            )
+                        },
+                        uniqueMessageId = uniqueMessageId,
+                        profileImageBase64 = extractImageAsBase64(extras),
+                        canReply = replyAvailable,
+                        conversationId = conversationId,
+                        isReplied = false
 
-        // Convert Small Icon to ByteArray
-        val iconBitmap = getBitmapFromIcon(sbn.notification.smallIcon)
-        val iconByteArray = iconBitmap?.let { encodeImageToByteArray(it) }
-
-        // Generate unique message ID (Include groupKey for uniqueness)
-      //  val uniqueMessageId = generateSHA256("$packageName|$title|$content|$groupKey")
-        val uniqueMessageId = generateSHA256("$packageName|$title|$content|$groupKey|$timestamp|$conversationId|$category")
-
-        // Logging notifications
-        when {
-            groupKey != null && isGroupSummary -> {
-                Log.d("NotificationListener", "📌 Group Summary Notification: $title from $appName ($packageName)")
-            }
-            groupKey != null -> {
-                Log.d("NotificationListener", "🔗 Grouped Notification: $title from $appName ($packageName) [Group: $groupKey]")
-            }
-            else -> {
-                Log.d("NotificationListener", "📨 Normal Notification: $title from $appName ($packageName)")
-            }
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val exists = db.notificationDao().checkIfNotificationExists(uniqueMessageId) > 0
-
-            if (!exists) {
-                val notification = NotificationEntity(
-                    title = title,
-                    content = content,
-                    packageName = packageName,
-                    time = timestamp,
-                    humanReadTime = getHumanReadableTime(timestamp),
-                    date = date,
-                    onlyTime = onlyTime,
-                    appName = appName,
-                    category = category,
-                    icon = iconByteArray,
-                    uniqueMessageId = uniqueMessageId,
-                    profileImageBase64 = imageBase64,
-                    canReply = canReply,
-                    conversationId = conversationId,
-                    isReplied = false,
-                    groupKey = groupKey,
-                    isGroupSummary = isGroupSummary
-                )
-                db.notificationDao().insertNotification(notification)
-            } else {
-                Log.d("NotificationListener", "Duplicate notification skipped: $content")
+                    )
+                    db.notificationDao().insertNotification(notification)
+                } else {
+                    Log.d("NotificationListener", "Duplicate notification skipped: $content")
+                }
             }
         }
     }
@@ -119,9 +95,14 @@ class NotificationListener : NotificationListenerService() {
         return baos.toByteArray()
     }
 
-    private fun generateSHA256(input: String): String {
-        val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }
+    private fun getReplyAction(notification: Notification): Notification.Action? {
+        return notification.actions?.find { it.remoteInputs != null }
+    }
+
+    private fun hashMessage(message: String): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(message.toByteArray())
+        return digest.joinToString("") { "%02x".format(it) }
     }
 
     private fun convertTimestamp(timestamp: Long): Pair<String, String> {
