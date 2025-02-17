@@ -35,7 +35,7 @@ class NotificationListener : NotificationListenerService() {
             val timestamp = sbn.postTime
             val category = sbn.notification.category ?: "Unknown"
             val appName = getAppNameFromPackage(packageName)
-            val conversationId = extras.getString("android.conversation")
+          //  val conversationId = extras.getString("android.conversation")
 
 
             // Generate a more robust uniqueMessageId
@@ -46,7 +46,7 @@ class NotificationListener : NotificationListenerService() {
             // Log notification details for debugging
             Log.d(
                 "NotificationListener",
-                "Package: $packageName, Title: $title, Content: $content, Timestamp: $timestamp, ConversationId: $conversationId, UniqueMessageId: $uniqueMessageId"
+                "Package: $packageName, Title: $title, Content: $content, Timestamp: $timestamp,  UniqueMessageId: $uniqueMessageId"
             )
 
             CoroutineScope(Dispatchers.IO).launch {
@@ -71,7 +71,7 @@ class NotificationListener : NotificationListenerService() {
                         uniqueMessageId = uniqueMessageId,
                         profileImageBase64 = extractImageAsBase64(extras),
                         canReply = replyAvailable,
-                        conversationId = conversationId,
+                     //   conversationId = conversationId,
                         isReplied = false
 
                     )

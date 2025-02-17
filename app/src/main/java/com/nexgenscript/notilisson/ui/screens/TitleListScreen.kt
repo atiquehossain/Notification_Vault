@@ -44,7 +44,9 @@ fun TitleListScreen(
         ) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(titles.keys.toList()) { title ->
-                    TitleItem(title) {
+                    val cleanedTitle = title.replace(Regex("\\(.*?\\)"), "").trim()
+
+                    TitleItem(cleanedTitle) {
                         navController.navigate("notificationList/$appName/$title")
                     }
                 }

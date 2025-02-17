@@ -20,6 +20,5 @@ data class NotificationEntity(
     @ColumnInfo(name = "uniqueMessageId") val uniqueMessageId: String,
     @ColumnInfo(name = "profileImageBase64") val profileImageBase64: String?,
     @ColumnInfo(name = "can_reply") val canReply: Boolean = false,
-    @ColumnInfo(name = "conversation_id") val conversationId: String?,
     @ColumnInfo(name = "is_replied") val isReplied: Boolean = false
 )
