@@ -49,5 +49,13 @@ fun AppNavigation(navController: NavHostController, viewModel: NotificationViewM
             val title = backStackEntry.arguments?.getString("title") ?: ""
             NotificationListScreen(viewModel, appName, title)
         }
+
+       /* composable("GroupedTitleItem/{appName}/{groupName}") { backStackEntry ->
+            val appName = backStackEntry.arguments?.getString("appName") ?: ""
+            val groupName = backStackEntry.arguments?.getString("groupName") ?: ""
+
+            GroupedTitleItem(viewModel, appName, groupName, navController)
+        }*/
+
     }
 }
