@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.nexgenscript.notilisson.data.NotificationDatabase
 import com.nexgenscript.notilisson.navigation.AppNavigation
-import com.nexgenscript.notilisson.utlls.isNotificationListenerEnabled
-import com.nexgenscript.notilisson.utlls.requestNotificationAccess
 import com.nexgenscript.notilisson.viewmodel.NotificationViewModel
 import com.nexgenscript.notilisson.viewmodel.NotificationViewModelFactory
 
@@ -20,13 +18,14 @@ class MainActivity : ComponentActivity() {
         val viewModel = ViewModelProvider(this, NotificationViewModelFactory(dao))[NotificationViewModel::class.java]
 
 
-        if (!isNotificationListenerEnabled(this)) {
-            requestNotificationAccess(this)
-        }
+
 
         setContent {
             val navController = rememberNavController()
             AppNavigation(navController, viewModel)
         }
+
+       /* Button(onClick = { navController.navigate("appList") }) {
+            Text("Go to App List")*/
     }
 }

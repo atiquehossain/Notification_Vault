@@ -23,7 +23,7 @@ fun AppNavigation(navController: NavHostController, viewModel: NotificationViewM
             }
         }
         composable("Notifications") {
-            SettingsScreen(navController, selectedTab) { newTab ->
+            allNotificationsScreen(navController, selectedTab) { newTab ->
                 selectedTab = newTab
                 navController.navigate(newTab) {
                     popUpTo("Notifications") { inclusive = false }
@@ -54,12 +54,7 @@ fun AppNavigation(navController: NavHostController, viewModel: NotificationViewM
         composable("GroupedTitleItem/{appName}/{groupName}") { backStackEntry ->
             val appName = backStackEntry.arguments?.getString("appName").orEmpty()
             val groupName = backStackEntry.arguments?.getString("groupName").orEmpty()
-
-            GroupedTitleItemScreen(
-                viewModel = viewModel,
-                appName = appName,
-                groupName = groupName,
-                navController = navController
+            GroupedTitleItemScreen(viewModel = viewModel, appName = appName, groupName = groupName, navController = navController
             )
         }
 

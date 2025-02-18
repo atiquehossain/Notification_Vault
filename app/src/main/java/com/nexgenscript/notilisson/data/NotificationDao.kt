@@ -19,15 +19,17 @@ interface NotificationDao {
     suspend fun clearAll()
 
     @Query("""
+   
     SELECT id, title, package_name, time, human_read_time, date, only_time, 
-           app_name, icon, category, profileImageBase64, uniqueMessageId, 
-           GROUP_CONCAT(content, ' | ') AS content, can_reply, is_replied
+           app_name, icon, category, profileImageBase64, uniqueMessageId, content, 
+           can_reply, is_replied
     FROM notifications 
     WHERE app_name NOT IN ('Android System') 
-        AND content NOT IN ('No Content')
+        AND IFNULL(category, '') NOT IN ('call', 'missed_call')
+        AND uniqueMessageId IS NOT NULL
         AND LOWER(content) NOT LIKE '%new messages%'
-        AND category NOT IN ('call', 'missed_call')
-    GROUP BY id, time, package_name, only_time, uniqueMessageId, title, app_name
+    GROUP BY human_read_time, title, content
+    HAVING id = MAX(id)
     ORDER BY time DESC
 """)
     fun getFilteredNotifications(): Flow<List<NotificationEntity>>
@@ -39,6 +41,7 @@ interface NotificationDao {
     FROM notifications 
     WHERE app_name = :appName
         AND title = :title
+        AND app_name NOT IN ('Android System') 
         AND IFNULL(category, '') NOT IN ('call', 'missed_call')
         AND uniqueMessageId IS NOT NULL
         AND LOWER(content) NOT LIKE '%new messages%'
