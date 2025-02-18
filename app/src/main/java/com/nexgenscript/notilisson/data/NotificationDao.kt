@@ -61,6 +61,10 @@ interface NotificationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNotification(notification: NotificationEntity)
 
+        @Query("SELECT * FROM notifications WHERE app_name = :appName AND title LIKE :groupName || '%' ORDER BY time DESC")
+        fun getNotificationsByAppAndGroup(appName: String, groupName: String): Flow<List<NotificationEntity>>
+
+
 
 }
 

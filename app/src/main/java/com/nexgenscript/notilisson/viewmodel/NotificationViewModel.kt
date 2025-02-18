@@ -22,9 +22,7 @@ class NotificationViewModel(private val dao: NotificationDao) : ViewModel() {
     fun getNotificationsByAppAndTitle(appName: String, title: String) = dao.getNotificationsByAppAndTitle(appName, title).asLiveData()
 
 
-    fun clearAllNotifications() {
-        viewModelScope.launch {
-            dao.clearAll()
-        }
+    fun getNotificationsByAppAndGroup(appName: String, groupName: String): LiveData<List<NotificationEntity>> {
+        return dao.getNotificationsByAppAndGroup(appName, groupName).asLiveData()
     }
 }

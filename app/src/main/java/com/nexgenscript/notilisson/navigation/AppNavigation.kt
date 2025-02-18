@@ -5,6 +5,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.nexgenscript.notilisson.ui.screens.GroupedTitleItemScreen
 import com.nexgenscript.notilisson.ui.screens.*
 import com.nexgenscript.notilisson.viewmodel.NotificationViewModel
 
@@ -50,12 +51,17 @@ fun AppNavigation(navController: NavHostController, viewModel: NotificationViewM
             NotificationListScreen(viewModel, appName, title)
         }
 
-       /* composable("GroupedTitleItem/{appName}/{groupName}") { backStackEntry ->
-            val appName = backStackEntry.arguments?.getString("appName") ?: ""
-            val groupName = backStackEntry.arguments?.getString("groupName") ?: ""
+        composable("GroupedTitleItem/{appName}/{groupName}") { backStackEntry ->
+            val appName = backStackEntry.arguments?.getString("appName").orEmpty()
+            val groupName = backStackEntry.arguments?.getString("groupName").orEmpty()
 
-            GroupedTitleItem(viewModel, appName, groupName, navController)
-        }*/
+            GroupedTitleItemScreen(
+                viewModel = viewModel,
+                appName = appName,
+                groupName = groupName,
+                navController = navController
+            )
+        }
 
     }
 }
