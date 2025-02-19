@@ -23,7 +23,7 @@ fun AppNavigation(navController: NavHostController, viewModel: NotificationViewM
             }
         }
         composable("Notifications") {
-            allNotificationsScreen(navController, selectedTab) { newTab ->
+            AllNotificationsScreen(navController, selectedTab) { newTab ->
                 selectedTab = newTab
                 navController.navigate(newTab) {
                     popUpTo("Notifications") { inclusive = false }

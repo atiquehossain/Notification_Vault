@@ -38,10 +38,9 @@ class NotificationListener : NotificationListenerService() {
           //  val conversationId = extras.getString("android.conversation")
 
 
-            // Generate a more robust uniqueMessageId
-            val uniqueMessageId =
-                hashMessage("$packageName$title$content")
-            val replyAvailable = getReplyAction(it.notification) != null // ✅ Detect reply action
+            val messageId = extras.getString("message_id") ?: ""
+            val uniqueMessageId = hashMessage("$packageName$title$content$messageId")
+            val replyAvailable = getReplyAction(it.notification) != null
 
             // Log notification details for debugging
             Log.d(

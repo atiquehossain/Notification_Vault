@@ -54,10 +54,6 @@ interface NotificationDao {
         title: String
     ): Flow<List<NotificationEntity>>
 
-
-
-
-
     @Query("SELECT COUNT(*) FROM notifications WHERE uniqueMessageId  = :uniqueMessageId ")
     suspend fun checkIfNotificationExists(uniqueMessageId: String): Int
 
