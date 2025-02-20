@@ -35,13 +35,11 @@ class NotificationListener : NotificationListenerService() {
             val timestamp = sbn.postTime
             val category = sbn.notification.category ?: "Unknown"
             val appName = getAppNameFromPackage(packageName)
-          //  val conversationId = extras.getString("android.conversation")
-
-
-            val messageId = extras.getString("message_id") ?: ""
-            val uniqueMessageId = hashMessage("$packageName$title$content$messageId")
             val replyAvailable = getReplyAction(it.notification) != null
 
+            //  val conversationId = extras.getString("android.conversation")
+            val messageId = extras.getString("android.messageId") ?: ""
+            val uniqueMessageId = hashMessage("$packageName$title$content$messageId")
             // Log notification details for debugging
             Log.d(
                 "NotificationListener",
@@ -49,9 +47,10 @@ class NotificationListener : NotificationListenerService() {
             )
 
             CoroutineScope(Dispatchers.IO).launch {
-                val exists = db.notificationDao().checkIfNotificationExists(uniqueMessageId) > 0
+              //  val exists = db.notificationDao().checkIfNotificationExists(uniqueMessageId, messageId) > 0
 
-                if (!exists) {
+               // if (!exists) {
+                    // Insert the notification
                     val notification = NotificationEntity(
                         title = title,
                         content = content,
@@ -63,21 +62,16 @@ class NotificationListener : NotificationListenerService() {
                         appName = appName,
                         category = category,
                         icon = getBitmapFromIcon(sbn.notification.smallIcon)?.let {
-                            encodeImageToByteArray(
-                                it
-                            )
+                            encodeImageToByteArray(it)
                         },
                         uniqueMessageId = uniqueMessageId,
                         profileImageBase64 = extractImageAsBase64(extras),
                         canReply = replyAvailable,
-                     //   conversationId = conversationId,
-                        isReplied = false
-
+                        isReplied = false,
+                        messageId = messageId // Pass the messageId
                     )
                     db.notificationDao().insertNotification(notification)
-                } else {
-                    Log.d("NotificationListener", "Duplicate notification skipped: $content")
-                }
+               // }
             }
         }
     }
